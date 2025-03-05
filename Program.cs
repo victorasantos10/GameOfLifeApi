@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using GameOfLifeApi.Data;
+using GameOfLifeApi.Services;
+using GameOfLifeApi.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +24,7 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
 }
 
+builder.Services.AddScoped<IGameOfLifeService, GameOfLifeService>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
