@@ -9,11 +9,16 @@ namespace GameOfLifeApi.Data
 
         public MongoDbContext(IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("MongoDb")
-                                   ?? "mongodb://localhost:27017";
+            var host = configuration["MongoDbSettings:Host"] ?? "localhost";
+            var port = configuration["MongoDbSettings:Port"] ?? "27017";
+            var username = configuration["MongoDbSettings:Username"];
+            var password = configuration["MongoDbSettings:Password"];
+            var databaseName = configuration["MongoDbSettings:DatabaseName"] ?? "gameoflife";
+
+            var connectionString = $"mongodb://{username}:{password}@{host}:{port}";
+
             var client = new MongoClient(connectionString);
 
-            var databaseName = configuration["MongoDbSettings:DatabaseName"] ?? "gameoflife";
             _database = client.GetDatabase(databaseName);
         }
 
