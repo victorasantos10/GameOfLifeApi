@@ -1,14 +1,129 @@
-﻿namespace GameOfLifeApi.Services
+﻿using FluentResults;
+using GameOfLifeApi.Helpers;
+using GameOfLifeApi.Models;
+using GameOfLifeApi.Repositories;
+
+namespace GameOfLifeApi.Services
 {
     public class GameOfLifeService : IGameOfLifeService
     {  
+        private readonly IBoardRepository _boardRepository;
+
+        public GameOfLifeService(IBoardRepository boardRepository)
+        {
+            _boardRepository = boardRepository;
+        }
+
+        public async Task<Result<Guid>> CreateBoardAsync(bool[][] initialState)
+        {
+            if (initialState == null || initialState.Length == 0 || initialState[0].Length == 0)
+            {
+                return Result.Fail("Board is empty");
+            }
+
+            int cols = initialState[0].Length;
+
+            foreach (var row in initialState)
+            {
+                if(row.Length != cols)
+                {
+                    return Result.Fail("Board must be rectangular");
+                }
+            }
+
+            var board = new Board
+            {
+                Id = Guid.NewGuid(),
+                State = BoardStateConverter.Serialize(initialState),
+                LastUpdated = DateTime.UtcNow
+            };
+
+            await _boardRepository.AddBoardAsync(board);
+            return Result.Ok(board.Id);
+        }
+
+        public async Task<Result<bool[][]>> GetNextStateAsync(Guid boardId)
+        {
+            var board = await _boardRepository.GetBoardByIdAsync(boardId);
+
+            if (board == null)
+                return Result.Fail("Board not found.");
+
+            bool[][]? currentState = BoardStateConverter.Deserialize(board.State);
+
+            if(currentState == null)
+            {
+                return Result.Fail("Board not found.");
+            }
+
+            bool[][] nextState = GetNextGeneration(currentState);
+
+            board.State = BoardStateConverter.Serialize(nextState);
+            board.LastUpdated = DateTime.UtcNow;
+            await _boardRepository.UpdateBoardAsync(board);
+
+            return Result.Ok(nextState);
+        }
+
+        public async Task<Result<bool[][]>> GetFinalStateAsync(Guid boardId, int maxAttempts = 1000)
+        {
+            var board = await _boardRepository.GetBoardByIdAsync(boardId);
+            if (board == null)
+                return Result.Fail("Board not found.");
+
+            var currentState = BoardStateConverter.Deserialize(board.State);
+            int attempts = 0;
+            while (attempts < maxAttempts)
+            {
+                var nextState = GetNextGeneration(currentState);
+                if (AreBoardsEqual(currentState, nextState))
+                {
+                    board.State = BoardStateConverter.Serialize(nextState);
+                    board.LastUpdated = DateTime.UtcNow;
+                    await _boardRepository.UpdateBoardAsync(board);
+                    return nextState;
+                }
+                currentState = nextState;
+                attempts++;
+            }
+            return Result.Fail($"Final state not reached after {maxAttempts} attempts.");
+        }
+
+        public async Task<Result<bool[][]>> GetStateAfterStepsAsync(Guid boardId, int steps)
+        {
+            if (steps < 1)
+                return Result.Fail("Steps must be at least 1.");
+
+            var board = await _boardRepository.GetBoardByIdAsync(boardId);
+            if (board == null)
+                return Result.Fail("Board not found.");
+
+            var currentState = BoardStateConverter.Deserialize(board.State);
+
+            if (currentState == null)
+            {
+                //TODO: Implement result pattern.
+                return Result.Fail("Board not found.");
+            }
+
+            bool[][] newState = currentState;
+            for (int i = 0; i < steps; i++)
+            {
+                newState = GetNextGeneration(newState);
+            }
+
+            board.State = BoardStateConverter.Serialize(newState);
+            board.LastUpdated = DateTime.UtcNow;
+            await _boardRepository.UpdateBoardAsync(board);
+            return newState;
+        }
 
         /// <summary>
         /// Create the next board based on the current board.
         /// </summary>
         /// <param name="board">the current board</param>
         /// <returns>the next board</returns>
-        public bool[][] GetNextGeneration(bool[][] board)
+        private bool[][] GetNextGeneration(bool[][] board)
         {
             int rows = board.Length;
             int cols = board[0].Length;
@@ -91,7 +206,7 @@
         /// <param name="board">current board</param>
         /// <param name="nextBoard">next board</param>
         /// <returns>true if they are equal, otherwise false</returns>
-        public bool AreBoardsEqual(bool[][] board, bool[][] nextBoard)
+        private bool AreBoardsEqual(bool[][] board, bool[][] nextBoard)
         {
             int rows = board.Length;
             int cols = board[0].Length;
@@ -99,7 +214,7 @@
             {
                 for (int j = 0; j < cols; j++)
                 {
-                    if (board[i][j] != nextBoard[i][j])
+                    if (board[i][j] != nextBoard[i][j]) //if there are any different elements, it means they aren't equal.
                         return false;
                 }
             }

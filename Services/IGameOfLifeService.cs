@@ -1,8 +1,13 @@
-﻿namespace GameOfLifeApi.Services
+﻿using FluentResults;
+
+namespace GameOfLifeApi.Services
 {
     public interface IGameOfLifeService
     {
-        bool[][] GetNextGeneration(bool[][] board);
-        bool AreBoardsEqual(bool[][] board, bool[][] nextBoard);
+        Task<Result<Guid>> CreateBoardAsync(bool[][] initialState);
+        Task<Result<bool[][]>> GetNextStateAsync(Guid boardId);
+        Task<Result<bool[][]>> GetFinalStateAsync(Guid boardId, int maxAttempts);
+        Task<Result<bool[][]>> GetStateAfterStepsAsync(Guid boardId, int steps);
+
     }
 }
