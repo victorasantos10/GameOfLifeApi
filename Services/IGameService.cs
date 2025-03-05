@@ -2,7 +2,7 @@
 
 namespace GameOfLifeApi.Services
 {
-    public interface IGameOfLifeService
+    public interface IGameService
     {
         Task<Result<Guid>> CreateBoardAsync(bool[][] initialState);
         Task<Result<bool[][]>> GetNextStateAsync(Guid boardId);

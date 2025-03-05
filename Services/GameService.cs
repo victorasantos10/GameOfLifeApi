@@ -5,11 +5,11 @@ using GameOfLifeApi.Repositories;
 
 namespace GameOfLifeApi.Services
 {
-    public class GameOfLifeService : IGameOfLifeService
+    public class GameService : IGameService
     {  
         private readonly IBoardRepository _boardRepository;
 
-        public GameOfLifeService(IBoardRepository boardRepository)
+        public GameService(IBoardRepository boardRepository)
         {
             _boardRepository = boardRepository;
         }
