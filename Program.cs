@@ -23,7 +23,7 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
 }
 
-builder.Services.AddScoped<IGameOfLifeService, GameOfLifeService>();
+builder.Services.AddScoped<IGameService, GameService>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

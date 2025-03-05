@@ -1,3 +1,5 @@
+using FluentResults;
+using GameOfLifeApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GameOfLifeApi.Controllers
@@ -6,17 +8,61 @@ namespace GameOfLifeApi.Controllers
     [Route("/api/boards")]
     public class BoardsController : ControllerBase
     {
-        private readonly ILogger<BoardsController> _logger;
+        private readonly IGameService _gameService;
 
-        public BoardsController(ILogger<BoardsController> logger)
+        public BoardsController(IGameService gameOfLifeService)
         {
-            _logger = logger;
+            _gameService = gameOfLifeService;
         }
 
         [HttpPost]
-        public IEnumerable<object> Get()
+        public async Task<IActionResult> CreateBoard([FromBody] bool[][] board)
         {
-            return null;
+            Result<Guid> result = await _gameService.CreateBoardAsync(board);
+
+            if (result.IsFailed)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            return Ok(result.Value);
+        }
+
+        [HttpGet("{id}/next")]
+        public async Task<IActionResult> GetNextState(Guid id)
+        {
+            Result<bool[][]> result = await _gameService.GetNextStateAsync(id);
+            if (result.IsFailed)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            return Ok(result.Value);
+        }
+
+        [HttpGet("{id}/advance/{steps:int}")]
+        public async Task<IActionResult> GetStateAfterSteps(Guid id, int steps)
+        {
+            Result<bool[][]> result = await _gameService.GetStateAfterStepsAsync(id, steps);
+            if (result.IsFailed)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            return Ok(result.Value);
+        }
+
+        [HttpGet("{id}/final")]
+        public async Task<IActionResult> GetFinalState(Guid id, [FromQuery] int maxAttempts = 1000)
+        {
+           Result<bool[][]> result = await _gameService.GetFinalStateAsync(id, maxAttempts);
+
+            if (result.IsFailed)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            return Ok(result.Value);
         }
     }
 }
