@@ -14,6 +14,11 @@ namespace GameOfLifeApi.Services
             _boardRepository = boardRepository;
         }
 
+        /// <summary>
+        /// Creates the board on the database, using an initial state
+        /// </summary>
+        /// <param name="initialState"></param>
+        /// <returns></returns>
         public async Task<Result<Guid>> CreateBoardAsync(bool[][] initialState)
         {
             if (initialState == null || initialState.Length == 0 || initialState[0].Length == 0)
@@ -42,6 +47,11 @@ namespace GameOfLifeApi.Services
             return Result.Ok(board.Id);
         }
 
+        /// <summary>
+        /// Gets the next state of the board.
+        /// </summary>
+        /// <param name="boardId">the id of the board</param>
+        /// <returns>the board state</returns>
         public async Task<Result<bool[][]>> GetNextStateAsync(Guid boardId)
         {
             var board = await _boardRepository.GetBoardByIdAsync(boardId);
@@ -65,6 +75,12 @@ namespace GameOfLifeApi.Services
             return Result.Ok(nextState);
         }
 
+        /// <summary>
+        /// Gets the final state of the board.
+        /// </summary>
+        /// <param name="boardId">the id of the board</param>
+        /// <param name="maxAttempts">limit of attempts</param>
+        /// <returns>the board state</returns>
         public async Task<Result<bool[][]>> GetFinalStateAsync(Guid boardId, int maxAttempts = 1000)
         {
             var board = await _boardRepository.GetBoardByIdAsync(boardId);
@@ -72,10 +88,17 @@ namespace GameOfLifeApi.Services
                 return Result.Fail("Board not found.");
 
             var currentState = BoardStateConverter.Deserialize(board.State);
+
+            if (currentState == null)
+            {
+                return Result.Fail("Board not found.");
+            }
+
             int attempts = 0;
             while (attempts < maxAttempts)
             {
                 var nextState = GetNextGeneration(currentState);
+
                 if (AreBoardsEqual(currentState, nextState))
                 {
                     board.State = BoardStateConverter.Serialize(nextState);
@@ -86,9 +109,16 @@ namespace GameOfLifeApi.Services
                 currentState = nextState;
                 attempts++;
             }
+
             return Result.Fail($"Final state not reached after {maxAttempts} attempts.");
         }
 
+        /// <summary>
+        /// Gets the board state after a specified amount of steps
+        /// </summary>
+        /// <param name="boardId">the id of the board</param>
+        /// <param name="steps">the amount of steps to advance</param>
+        /// <returns>the board state</returns>
         public async Task<Result<bool[][]>> GetStateAfterStepsAsync(Guid boardId, int steps)
         {
             if (steps < 1)
@@ -102,7 +132,6 @@ namespace GameOfLifeApi.Services
 
             if (currentState == null)
             {
-                //TODO: Implement result pattern.
                 return Result.Fail("Board not found.");
             }
 
