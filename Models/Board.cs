@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using System.ComponentModel.DataAnnotations;
 
 namespace GameOfLifeApi.Models
 {
@@ -7,23 +9,26 @@ namespace GameOfLifeApi.Models
         /// <summary>
         /// Id field for the board
         /// </summary>
-        [Key]
+        [BsonId]
+        [BsonRepresentation(BsonType.String)]
         public Guid Id { get; set; }
 
         /// <summary>
         /// JSON-serialized representation of the board state (bool[][]) 
         /// </summary>
-        [Required]
+        [BsonElement("state")]
         public string State { get; set; }
 
         /// <summary>
         /// Date and time for the board creation
         /// </summary>
+        [BsonElement("createdAt")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        
+
         /// <summary>
         /// Date and time for the last board update
         /// </summary>
+        [BsonElement("lastUpdated")]
         public DateTime LastUpdated { get; set; }
     }
 }
