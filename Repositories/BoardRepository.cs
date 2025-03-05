@@ -1,31 +1,33 @@
 ﻿using GameOfLifeApi.Data;
 using GameOfLifeApi.Models;
+using MongoDB.Driver;
 
 namespace GameOfLifeApi.Repositories
 {
     public class BoardRepository : IBoardRepository
     {
-        private readonly GameOfLifeContext _context;
-        public BoardRepository(GameOfLifeContext context)
+        private readonly IMongoCollection<Board> _boards;
+
+        public BoardRepository(MongoDbContext context)
         {
-            _context = context;
+            _boards = context.Boards;
         }
 
         public async Task AddBoardAsync(Board board)
         {
-            _context.Boards.Add(board);
-            await _context.SaveChangesAsync();
+            await _boards.InsertOneAsync(board);
         }
 
-        public async Task<Board?> GetBoardByIdAsync(Guid id)
+        public async Task<Board> GetBoardByIdAsync(Guid id)
         {
-            return await _context.Boards.FindAsync(id);
+            var filter = Builders<Board>.Filter.Eq(b => b.Id, id);
+            return await _boards.Find(filter).FirstOrDefaultAsync();
         }
 
         public async Task UpdateBoardAsync(Board board)
         {
-            _context.Boards.Update(board);
-            await _context.SaveChangesAsync();
+            var filter = Builders<Board>.Filter.Eq(b => b.Id, board.Id);
+            await _boards.ReplaceOneAsync(filter, board);
         }
     }
 }
