@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using GameOfLifeApi.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -7,7 +10,18 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddDbContext<GameOfLifeContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")
+                      ?? "Host=localhost;Database=gameoflife;Username=postgres;Password=password"));
+
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<GameOfLifeContext>();
+    db.Database.Migrate();
+}
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
