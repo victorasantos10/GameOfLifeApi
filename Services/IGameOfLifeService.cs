@@ -1,4 +1,4 @@
-﻿namespace GameOfLifeApi.Interfaces
+﻿namespace GameOfLifeApi.Services
 {
     public interface IGameOfLifeService
     {

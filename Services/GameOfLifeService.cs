@@ -1,6 +1,4 @@
-﻿using GameOfLifeApi.Interfaces;
-
-namespace GameOfLifeApi.Services
+﻿namespace GameOfLifeApi.Services
 {
     public class GameOfLifeService : IGameOfLifeService
     {  

@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using GameOfLifeApi.Data;
 using GameOfLifeApi.Services;
-using GameOfLifeApi.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
