@@ -1,6 +1,6 @@
 using FluentResults;
+using GameOfLifeApi.Handlers;
 using GameOfLifeApi.Helpers;
-using GameOfLifeApi.Models.DTO;
 using GameOfLifeApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,50 +21,29 @@ namespace GameOfLifeApi.Controllers
         public async Task<IActionResult> CreateBoard([FromBody] bool[][] board)
         {
             Result<Guid> result = await _gameService.CreateBoardAsync(board);
-
-            if (result.IsFailed)
-            {
-                return BadRequest(result.Errors);
-            }
-
-            return Ok(result.Value);
+            return ApiResultHandler.HandleResult(result);
         }
 
         [HttpGet("{id}/next")]
         public async Task<IActionResult> GetNextState(Guid id)
         {
-            Result<bool[][]> result = await _gameService.GetNextStateAsync(id);
-            if (result.IsFailed)
-            {
-                return BadRequest(result.Errors);
-            }
-            
-            return Ok(new BoardResponseDTO { ascii = AsciiConverter.ParseToAscii(result.Value) });
+            Result<string> result = await _gameService.GetNextStateAsync(id);
+            return ApiResultHandler.HandleResult(result);
         }
 
         [HttpGet("{id}/advance/{steps:int}")]
         public async Task<IActionResult> GetStateAfterSteps(Guid id, int steps)
         {
-            Result<bool[][]> result = await _gameService.GetStateAfterStepsAsync(id, steps);
-            if (result.IsFailed)
-            {
-                return BadRequest(result.Errors);
-            }
+            Result<string> result = await _gameService.GetStateAfterStepsAsync(id, steps);
+            return ApiResultHandler.HandleResult(result);
 
-            return Ok(new BoardResponseDTO { ascii = AsciiConverter.ParseToAscii(result.Value) });
         }
 
         [HttpGet("{id}/final")]
         public async Task<IActionResult> GetFinalState(Guid id, [FromQuery] int maxAttempts = 1000)
         {
-           Result<bool[][]> result = await _gameService.GetFinalStateAsync(id, maxAttempts);
-
-            if (result.IsFailed)
-            {
-                return BadRequest(result.Errors);
-            }
-
-            return Ok(new BoardResponseDTO { ascii = AsciiConverter.ParseToAscii(result.Value) });
+           Result<string> result = await _gameService.GetFinalStateAsync(id, maxAttempts);
+           return ApiResultHandler.HandleResult(result);
         }
     }
 }

@@ -52,7 +52,7 @@ namespace GameOfLifeApi.Services
         /// </summary>
         /// <param name="boardId">the id of the board</param>
         /// <returns>the board state</returns>
-        public async Task<Result<bool[][]>> GetNextStateAsync(Guid boardId)
+        public async Task<Result<string>> GetNextStateAsync(Guid boardId)
         {
             var board = await _boardRepository.GetBoardByIdAsync(boardId);
 
@@ -72,7 +72,7 @@ namespace GameOfLifeApi.Services
             board.LastUpdated = DateTime.UtcNow;
             await _boardRepository.UpdateBoardAsync(board);
 
-            return Result.Ok(nextState);
+            return Result.Ok(AsciiConverter.ParseToAscii(nextState));
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace GameOfLifeApi.Services
         /// <param name="boardId">the id of the board</param>
         /// <param name="maxAttempts">limit of attempts</param>
         /// <returns>the board state</returns>
-        public async Task<Result<bool[][]>> GetFinalStateAsync(Guid boardId, int maxAttempts = 1000)
+        public async Task<Result<string>> GetFinalStateAsync(Guid boardId, int maxAttempts = 1000)
         {
             var board = await _boardRepository.GetBoardByIdAsync(boardId);
             if (board == null)
@@ -104,7 +104,7 @@ namespace GameOfLifeApi.Services
                     board.State = BoardStateConverter.Serialize(nextState);
                     board.LastUpdated = DateTime.UtcNow;
                     await _boardRepository.UpdateBoardAsync(board);
-                    return nextState;
+                    return Result.Ok(AsciiConverter.ParseToAscii(nextState));
                 }
                 currentState = nextState;
                 attempts++;
@@ -119,7 +119,7 @@ namespace GameOfLifeApi.Services
         /// <param name="boardId">the id of the board</param>
         /// <param name="steps">the amount of steps to advance</param>
         /// <returns>the board state</returns>
-        public async Task<Result<bool[][]>> GetStateAfterStepsAsync(Guid boardId, int steps)
+        public async Task<Result<string>> GetStateAfterStepsAsync(Guid boardId, int steps)
         {
             if (steps < 1)
                 return Result.Fail("Steps must be at least 1.");
@@ -144,7 +144,7 @@ namespace GameOfLifeApi.Services
             board.State = BoardStateConverter.Serialize(newState);
             board.LastUpdated = DateTime.UtcNow;
             await _boardRepository.UpdateBoardAsync(board);
-            return newState;
+            return Result.Ok(AsciiConverter.ParseToAscii(newState));
         }
 
         /// <summary>
