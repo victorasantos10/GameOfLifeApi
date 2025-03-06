@@ -27,14 +27,15 @@ namespace GameOfLifeApi.Controllers
         [HttpGet("{id}/next")]
         public async Task<IActionResult> GetNextState(Guid id)
         {
-            Result<string> result = await _gameService.GetNextStateAsync(id);
+            Result<bool[][]> result = await _gameService.GetNextStateAsync(id);
+
             return ApiResultHandler.HandleResult(result);
         }
 
         [HttpGet("{id}/advance/{steps:int}")]
         public async Task<IActionResult> GetStateAfterSteps(Guid id, int steps)
         {
-            Result<string> result = await _gameService.GetStateAfterStepsAsync(id, steps);
+            Result<bool[][]> result = await _gameService.GetStateAfterStepsAsync(id, steps);
             return ApiResultHandler.HandleResult(result);
 
         }
@@ -42,7 +43,7 @@ namespace GameOfLifeApi.Controllers
         [HttpGet("{id}/final")]
         public async Task<IActionResult> GetFinalState(Guid id, [FromQuery] int maxAttempts = 1000)
         {
-           Result<string> result = await _gameService.GetFinalStateAsync(id, maxAttempts);
+           Result<bool[][]> result = await _gameService.GetFinalStateAsync(id, maxAttempts);
            return ApiResultHandler.HandleResult(result);
         }
     }

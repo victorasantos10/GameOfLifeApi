@@ -9,7 +9,7 @@ public class GlobalExceptionFilter : IExceptionFilter
 {
     public void OnException(ExceptionContext context)
     {
-        context.Result = ApiResultHandler.HandleException<string>(Result.Fail("An unexpected error occurred. Please try again later."));
+        context.Result = ApiResultHandler.HandleException(Result.Fail("An unexpected error occurred. Please try again later."));
 
         context.ExceptionHandled = true;
     }
