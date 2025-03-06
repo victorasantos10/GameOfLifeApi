@@ -68,7 +68,7 @@ namespace GameOfLifeTests
         }
 
         [Fact]
-        public async Task GetNextStateAsync_InvalidBoardId_ThrowsArgumentException()
+        public async Task GetNextStateAsync_InvalidBoardId_ReturnsFailedResult()
         {
             Guid invalidId = Guid.NewGuid();
             _boardRepositoryMock.Setup(r => r.GetBoardByIdAsync(invalidId))
@@ -79,7 +79,7 @@ namespace GameOfLifeTests
         }
 
         [Fact]
-        public async Task GetStateAfterStepsAsync_InvalidSteps_ThrowsArgumentException()
+        public async Task GetStateAfterStepsAsync_InvalidSteps_ReturnsFailedResult()
         {
             Guid boardId = Guid.NewGuid();
 
@@ -152,7 +152,7 @@ namespace GameOfLifeTests
         }
 
         [Fact]
-        public async Task GetFinalStateAsync_BoardNotFound_ThrowsArgumentException()
+        public async Task GetFinalStateAsync_BoardNotFound_ReturnsFailedResult()
         {
             Guid boardId = Guid.NewGuid();
             _boardRepositoryMock.Setup(r => r.GetBoardByIdAsync(boardId))
