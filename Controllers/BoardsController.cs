@@ -1,4 +1,6 @@
 using FluentResults;
+using GameOfLifeApi.Helpers;
+using GameOfLifeApi.Models.DTO;
 using GameOfLifeApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -36,8 +38,8 @@ namespace GameOfLifeApi.Controllers
             {
                 return BadRequest(result.Errors);
             }
-
-            return Ok(result.Value);
+            
+            return Ok(new BoardResponseDTO { ascii = AsciiConverter.ParseToAscii(result.Value) });
         }
 
         [HttpGet("{id}/advance/{steps:int}")]
@@ -49,7 +51,7 @@ namespace GameOfLifeApi.Controllers
                 return BadRequest(result.Errors);
             }
 
-            return Ok(result.Value);
+            return Ok(new BoardResponseDTO { ascii = AsciiConverter.ParseToAscii(result.Value) });
         }
 
         [HttpGet("{id}/final")]
@@ -62,7 +64,7 @@ namespace GameOfLifeApi.Controllers
                 return BadRequest(result.Errors);
             }
 
-            return Ok(result.Value);
+            return Ok(new BoardResponseDTO { ascii = AsciiConverter.ParseToAscii(result.Value) });
         }
     }
 }
