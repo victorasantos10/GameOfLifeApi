@@ -20,11 +20,12 @@ namespace GameOfLifeTests
         [Fact]
         public async Task CreateBoardAsync_ValidBoard_ReturnsNewGuid()
         {
+            //Glider pattern
             bool[][] boardState = new bool[][]
             {
-                new bool[] { true, false, true },
-                new bool[] { false, true, false },
-                new bool[] { true, false, true }
+                new bool[] { false, true, false},
+                new bool[] { false, false, true},
+                new bool[] { true, true, true }
             };
 
             _boardRepositoryMock.Setup(r => r.AddBoardAsync(It.IsAny<Board>()))
@@ -39,16 +40,26 @@ namespace GameOfLifeTests
         [Fact]
         public async Task GetNextStateAsync_ValidBoard_ReturnsNextState()
         {
-            bool[][] boardState = new bool[][]
+            //Glider pattern
+            bool[][] initialBoardState = new bool[][]
             {
-                new bool[] { false, false },
-                new bool[] { false, false }
+                new bool[] { false, true, false},
+                new bool[] { false, false, true},
+                new bool[] { true, true, true }
+            };
+
+            //Next state for glider
+            bool[][] nextState = new bool[][]
+            {
+                new bool[] { false, false, false},
+                new bool[] { true,  false, true},
+                new bool[] { false, true, true}
             };
 
             var board = new Board
             {
                 Id = Guid.NewGuid(),
-                State = BoardStateConverter.Serialize(boardState),
+                State = BoardStateConverter.Serialize(initialBoardState),
                 CreatedAt = DateTime.UtcNow,
                 LastUpdated = DateTime.UtcNow
             };
@@ -58,12 +69,12 @@ namespace GameOfLifeTests
             _boardRepositoryMock.Setup(r => r.UpdateBoardAsync(It.IsAny<Board>()))
                 .Returns(Task.CompletedTask);
 
-            var nextState = await _service.RunToNextStateAsync(board.Id);
+            var nextStateSaved = await _service.RunToNextStateAsync(board.Id);
 
-            Assert.Equal(boardState.Length, nextState.Value.Length);
-            for (int i = 0; i < boardState.Length; i++)
+            Assert.Equal(initialBoardState.Length, nextStateSaved.Value.Length);
+            for (int i = 0; i < nextState.Length; i++)
             {
-                Assert.Equal(boardState[i], nextState.Value[i]);
+                Assert.Equal(nextState[i], nextStateSaved.Value[i]);
             }
         }
 
@@ -92,9 +103,9 @@ namespace GameOfLifeTests
         {
             bool[][] boardState = new bool[][]
             {
-                new bool[] { false, false, false },
-                new bool[] { false, false, false },
-                new bool[] { false, false, false }
+                new bool[] { false, true, false},
+                new bool[] { false, false, true},
+                new bool[] { true, true, true }
             };
 
             var board = new Board
@@ -122,17 +133,26 @@ namespace GameOfLifeTests
         [Fact]
         public async Task GetFinalStateAsync_StableBoard_ReturnsFinalState()
         {
-            bool[][] boardState = new bool[][]
+            //Glider pattern
+            bool[][] initialBoardState = new bool[][]
             {
-                new bool[] { false, false, false },
-                new bool[] { false, false, false },
-                new bool[] { false, false, false }
+new bool[] { false, true, false},
+                new bool[] { false, false, true},
+                new bool[] { true, true, true }
+            };
+
+            //final state for glider
+            bool[][] nextState = new bool[][]
+            {
+                new bool[] { false, false, false},
+                new bool[] { false,  true, true},
+                new bool[] { false, true, true}
             };
 
             var board = new Board
             {
                 Id = Guid.NewGuid(),
-                State = BoardStateConverter.Serialize(boardState),
+                State = BoardStateConverter.Serialize(initialBoardState),
                 CreatedAt = DateTime.UtcNow,
                 LastUpdated = DateTime.UtcNow
             };
@@ -144,10 +164,10 @@ namespace GameOfLifeTests
 
             var finalState = await _service.AdvanceToFinalStateAsync(board.Id);
 
-            Assert.Equal(boardState.Length, finalState.Value.Length);
-            for (int i = 0; i < boardState.Length; i++)
+            Assert.Equal(initialBoardState.Length, finalState.Value.Length);
+            for (int i = 0; i < nextState.Length; i++)
             {
-                Assert.Equal(boardState[i], finalState.Value[i]);
+                Assert.Equal(nextState[i], finalState.Value[i]);
             }
         }
 
