@@ -52,7 +52,7 @@ namespace GameOfLifeApi.Services
         /// </summary>
         /// <param name="boardId">the id of the board</param>
         /// <returns>the board state</returns>
-        public async Task<Result<bool[][]>> GetNextStateAsync(Guid boardId)
+        public async Task<Result<bool[][]>> RunToNextStateAsync(Guid boardId)
         {
             var board = await _boardRepository.GetBoardByIdAsync(boardId);
 
@@ -81,7 +81,7 @@ namespace GameOfLifeApi.Services
         /// <param name="boardId">the id of the board</param>
         /// <param name="maxAttempts">limit of attempts</param>
         /// <returns>the board state</returns>
-        public async Task<Result<bool[][]>> GetFinalStateAsync(Guid boardId, int maxAttempts = 1000)
+        public async Task<Result<bool[][]>> AdvanceToFinalStateAsync(Guid boardId, int maxAttempts = 1000)
         {
             var board = await _boardRepository.GetBoardByIdAsync(boardId);
             if (board == null)
@@ -119,7 +119,7 @@ namespace GameOfLifeApi.Services
         /// <param name="boardId">the id of the board</param>
         /// <param name="steps">the amount of steps to advance</param>
         /// <returns>the board state</returns>
-        public async Task<Result<bool[][]>> GetStateAfterStepsAsync(Guid boardId, int steps)
+        public async Task<Result<bool[][]>> AdvanceBoardByStepsAsync(Guid boardId, int steps)
         {
             if (steps < 1)
                 return Result.Fail("Steps must be at least 1.");

@@ -3,6 +3,7 @@ using GameOfLifeApi.Handlers;
 using GameOfLifeApi.Helpers;
 using GameOfLifeApi.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace GameOfLifeApi.Controllers
 {
@@ -24,26 +25,26 @@ namespace GameOfLifeApi.Controllers
             return ApiResultHandler.HandleResult(result);
         }
 
-        [HttpGet("{id}/next")]
-        public async Task<IActionResult> GetNextState(Guid id)
+        [HttpPut("{id}/next")]
+        public async Task<IActionResult> RunToNextState(Guid id)
         {
-            Result<bool[][]> result = await _gameService.GetNextStateAsync(id);
+            Result<bool[][]> result = await _gameService.RunToNextStateAsync(id);
 
             return ApiResultHandler.HandleResult(result);
         }
 
-        [HttpGet("{id}/advance/{steps:int}")]
-        public async Task<IActionResult> GetStateAfterSteps(Guid id, int steps)
+        [HttpPut("{id}/advance/{steps:int}")]
+        public async Task<IActionResult> AdvanceBoardBySteps(Guid id, [Range(1, int.MaxValue)] int steps)
         {
-            Result<bool[][]> result = await _gameService.GetStateAfterStepsAsync(id, steps);
+            Result<bool[][]> result = await _gameService.AdvanceBoardByStepsAsync(id, steps);
             return ApiResultHandler.HandleResult(result);
 
         }
 
-        [HttpGet("{id}/final")]
-        public async Task<IActionResult> GetFinalState(Guid id, [FromQuery] int maxAttempts = 1000)
+        [HttpPut("{id}/final")]
+        public async Task<IActionResult> AdvanceToFinalState(Guid id, [FromQuery, Range(1, int.MaxValue)] int maxAttempts = 1000)
         {
-           Result<bool[][]> result = await _gameService.GetFinalStateAsync(id, maxAttempts);
+           Result<bool[][]> result = await _gameService.AdvanceToFinalStateAsync(id, maxAttempts);
            return ApiResultHandler.HandleResult(result);
         }
     }

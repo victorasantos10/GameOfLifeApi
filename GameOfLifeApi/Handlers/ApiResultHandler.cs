@@ -14,7 +14,7 @@ namespace GameOfLifeApi.Handlers
                 return new BadRequestObjectResult(new ApiResponseDTO { data = null, message = result?.Errors?[0].Message });
             }
 
-            return new OkObjectResult(new ApiResponseDTO() { data = AsciiConverter.ParseToAscii(result.Value), message = "Successful request" });
+            return new OkObjectResult(new ApiResponseDTO() { data = result.Value, asciiData = AsciiConverter.ParseToAscii(result.Value), message = "Successful request" });
         }
 
         public static IActionResult HandleResult<T>(Result<T> result)
