@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FluentResults;
+using GameOfLifeApi.Handlers;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace GameOfLifeApi.Filters;
@@ -7,17 +9,7 @@ public class GlobalExceptionFilter : IExceptionFilter
 {
     public void OnException(ExceptionContext context)
     {
-        // e.g., _logger.LogError(context.Exception, "Unhandled exception occurred.");
-
-        var response = new
-        {
-            Message = "An unexpected error occurred. Please try again later."
-        };
-
-        context.Result = new ObjectResult(response)
-        {
-            StatusCode = 500
-        };
+        context.Result = ApiResultHandler.HandleException<string>(Result.Fail("An unexpected error occurred. Please try again later."));
 
         context.ExceptionHandled = true;
     }
