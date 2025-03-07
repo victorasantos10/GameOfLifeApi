@@ -7,7 +7,7 @@ namespace GameOfLifeApi.Services
         /// <summary>
         /// Creates a new board
         /// </summary>
-        /// <param name="initialState"">initial state for the board</param>
+        /// <param name="initialState">initial state for the board</param>
         /// <returns>The board ID</returns>
         Task<Result<Guid>> CreateBoardAsync(bool[][] initialState);
 
