@@ -25,7 +25,7 @@ namespace GameOfLifeApi.Controllers
         /// <summary>
         /// Creates a new board
         /// </summary>
-        /// <param name="board" example="[[false,false,false],[true,true,true],[false,false,false]]">Payload containing the Blinker pattern</param>
+        /// <param name="board" example="[[false,false,false],[true,true,true],[false,false,false]]">Payload for the board (example filled with the Blinker pattern)</param>
         /// <returns>The board ID</returns>
         [HttpPost]
         public async Task<IActionResult> CreateBoard([FromBody] bool[][] board)
