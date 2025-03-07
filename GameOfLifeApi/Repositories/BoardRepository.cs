@@ -18,7 +18,7 @@ namespace GameOfLifeApi.Repositories
             await _boards.InsertOneAsync(board);
         }
 
-        public async Task<Board> GetBoardByIdAsync(Guid id)
+        public async Task<Board?> GetBoardByIdAsync(Guid id)
         {
             var filter = Builders<Board>.Filter.Eq(b => b.Id, id);
             return await _boards.Find(filter).FirstOrDefaultAsync();
