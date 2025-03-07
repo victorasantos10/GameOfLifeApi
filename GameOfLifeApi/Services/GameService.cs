@@ -2,16 +2,19 @@
 using GameOfLifeApi.Helpers;
 using GameOfLifeApi.Models;
 using GameOfLifeApi.Repositories;
+using Microsoft.Extensions.Logging;
 
 namespace GameOfLifeApi.Services
 {
     public class GameService : IGameService
     {  
         private readonly IBoardRepository _boardRepository;
+        private readonly ILogger<GameService> _logger;
 
         public GameService(IBoardRepository boardRepository)
         {
             _boardRepository = boardRepository;
+            _logger = logger;
         }
 
         /// <summary>
@@ -21,8 +24,11 @@ namespace GameOfLifeApi.Services
         /// <returns></returns>
         public async Task<Result<Guid>> CreateBoardAsync(bool[][] initialState)
         {
+            _logger.LogInformation("Creating board...");
+            
             if (initialState == null || initialState.Length == 0 || initialState[0].Length == 0)
             {
+                _logger.LogWarning("Board creation failed: Board is empty.");
                 return Result.Fail("Board is empty");
             }
 
@@ -32,6 +38,7 @@ namespace GameOfLifeApi.Services
             {
                 if(row.Length != cols)
                 {
+                    _logger.LogWarning("Board creation failed: Board must be rectangular.");
                     return Result.Fail("Board must be rectangular");
                 }
             }
@@ -44,6 +51,8 @@ namespace GameOfLifeApi.Services
             };
 
             await _boardRepository.AddBoardAsync(board);
+
+            _logger.LogInformation("Board created with ID: {BoardId}", board.Id);
             return Result.Ok(board.Id);
         }
 
@@ -54,15 +63,21 @@ namespace GameOfLifeApi.Services
         /// <returns>the board state</returns>
         public async Task<Result<bool[][]>> RunToNextStateAsync(Guid boardId)
         {
+            _logger.LogInformation("Running board {BoardId} to next state...", boardId);
             var board = await _boardRepository.GetBoardByIdAsync(boardId);
 
             if (board == null)
+            {
+                _logger.LogWarning("RunToNextState failed: Board {BoardId} not found.", boardId);
                 return Result.Fail("Board not found.");
+            }
+            
 
             bool[][]? currentState = BoardStateConverter.Deserialize(board.State);
 
             if(currentState == null)
             {
+                _logger.LogError("RunToNextState failed: Unable to deserialize board state for {BoardId}.", boardId);
                 return Result.Fail("Board not found.");
             }
 
@@ -71,6 +86,7 @@ namespace GameOfLifeApi.Services
             board.State = BoardStateConverter.Serialize(nextState);
             board.LastUpdated = DateTime.UtcNow;
             await _boardRepository.UpdateBoardAsync(board);
+            _logger.LogInformation("Board {BoardId} advanced to next state.", boardId);
 
             return Result.Ok(nextState);
         }
@@ -83,14 +99,20 @@ namespace GameOfLifeApi.Services
         /// <returns>the board state</returns>
         public async Task<Result<bool[][]>> AdvanceToFinalStateAsync(Guid boardId, int maxAttempts = 1000)
         {
+            _logger.LogInformation("Advancing board {BoardId} to final state (max {MaxAttempts} attempts)...", boardId, maxAttempts);
+
             var board = await _boardRepository.GetBoardByIdAsync(boardId);
             if (board == null)
+            {
+                _logger.LogWarning("AdvanceToFinalState failed: Board {BoardId} not found.", boardId);
                 return Result.Fail("Board not found.");
+            }
 
             var currentState = BoardStateConverter.Deserialize(board.State);
 
             if (currentState == null)
             {
+                _logger.LogError("AdvanceToFinalState failed: Unable to deserialize board state for {BoardId}.", boardId);
                 return Result.Fail("Board not found.");
             }
 
@@ -104,12 +126,14 @@ namespace GameOfLifeApi.Services
                     board.State = BoardStateConverter.Serialize(nextState);
                     board.LastUpdated = DateTime.UtcNow;
                     await _boardRepository.UpdateBoardAsync(board);
+                    _logger.LogInformation("Board {BoardId} reached a stable state after {Attempts} attempts.", boardId, attempts);
                     return Result.Ok(nextState);
                 }
                 currentState = nextState;
                 attempts++;
             }
 
+            _logger.LogWarning("Board {BoardId} did not reach a stable state after {MaxAttempts} attempts.", boardId, maxAttempts);
             return Result.Fail($"Final state not reached after {maxAttempts} attempts.");
         }
 
@@ -121,17 +145,26 @@ namespace GameOfLifeApi.Services
         /// <returns>the board state</returns>
         public async Task<Result<bool[][]>> AdvanceBoardByStepsAsync(Guid boardId, int steps)
         {
+            _logger.LogInformation("Advancing board {BoardId} by {Steps} steps...", boardId, steps);
             if (steps < 1)
+            {
+                _logger.LogWarning("AdvanceBoardBySteps failed: Invalid steps ({Steps}) provided for board {BoardId}.", steps, boardId);
                 return Result.Fail("Steps must be at least 1.");
+            }
 
             var board = await _boardRepository.GetBoardByIdAsync(boardId);
+            
             if (board == null)
+            {
+                _logger.LogWarning("AdvanceBoardBySteps failed: Board {BoardId} not found.", boardId);
                 return Result.Fail("Board not found.");
+            }
 
             var currentState = BoardStateConverter.Deserialize(board.State);
 
             if (currentState == null)
             {
+                _logger.LogError("AdvanceBoardBySteps failed: Unable to deserialize board state for {BoardId}.", boardId);
                 return Result.Fail("Board not found.");
             }
 
@@ -144,6 +177,7 @@ namespace GameOfLifeApi.Services
             board.State = BoardStateConverter.Serialize(newState);
             board.LastUpdated = DateTime.UtcNow;
             await _boardRepository.UpdateBoardAsync(board);
+            _logger.LogInformation("Board {BoardId} advanced by {Steps} steps.", boardId, steps);
             return Result.Ok(newState);
         }
 
