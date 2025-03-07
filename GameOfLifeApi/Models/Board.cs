@@ -4,6 +4,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace GameOfLifeApi.Models
 {
+    /// <summary>
+    /// Represents a board in the database
+    /// </summary>
     public class Board
     {
         /// <summary>

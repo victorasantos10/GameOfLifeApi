@@ -3,6 +3,9 @@ using MongoDB.Driver;
 
 namespace GameOfLifeApi.Data
 {
+    /// <summary>
+    /// Context for the MongoDB database
+    /// </summary>
     public class MongoDbContext
     {
         private readonly IMongoDatabase _database;

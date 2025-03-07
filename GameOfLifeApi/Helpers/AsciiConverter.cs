@@ -2,6 +2,9 @@
 
 namespace GameOfLifeApi.Helpers
 {
+    /// <summary>
+    /// Helper class to convert a 2D boolean array to an ASCII representation
+    /// </summary>
     public static class AsciiConverter
     {
         public static string ParseToAscii(bool[][] board, char live = 'O', char dead = '.')

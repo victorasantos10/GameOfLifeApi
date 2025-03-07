@@ -11,7 +11,7 @@ namespace GameOfLifeApi.Services
         private readonly IBoardRepository _boardRepository;
         private readonly ILogger<GameService> _logger;
 
-        public GameService(IBoardRepository boardRepository)
+        public GameService(IBoardRepository boardRepository, ILogger<GameService> logger)
         {
             _boardRepository = boardRepository;
             _logger = logger;

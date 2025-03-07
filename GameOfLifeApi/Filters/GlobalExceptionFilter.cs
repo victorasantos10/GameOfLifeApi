@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace GameOfLifeApi.Filters;
 
+/// <summary>
+/// Filter to handle exceptions globally
+/// </summary>
 public class GlobalExceptionFilter : IExceptionFilter
 {
     public void OnException(ExceptionContext context)

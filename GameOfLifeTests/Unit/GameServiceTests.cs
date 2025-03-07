@@ -1,7 +1,9 @@
+using Castle.Core.Logging;
 using GameOfLifeApi.Helpers;
 using GameOfLifeApi.Models;
 using GameOfLifeApi.Repositories;
 using GameOfLifeApi.Services;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace GameOfLifeTests.Unit
@@ -10,11 +12,13 @@ namespace GameOfLifeTests.Unit
     {
         private readonly Mock<IBoardRepository> _boardRepositoryMock;
         private readonly GameService _service;
+        private readonly ILogger<GameService> _logger;
 
         public GameServiceTests()
         {
             _boardRepositoryMock = new Mock<IBoardRepository>();
-            _service = new GameService(_boardRepositoryMock.Object);
+            _logger = new LoggerFactory().CreateLogger<GameService>();
+            _service = new GameService(_boardRepositoryMock.Object, _logger);
         }
 
         [Fact]

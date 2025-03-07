@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GameOfLifeApi.Handlers
 {
+    /// <summary>
+    /// Handler for API results
+    /// </summary>
     public static class ApiResultHandler
     {
         public static IActionResult HandleResult(Result<bool[][]> result)
