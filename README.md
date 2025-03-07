@@ -51,12 +51,12 @@ dotnet run
 
 `PUT /api/boards/{id}/next` - Advance the board by one generation.
 
-`PUT /api/boards/{id}/advance/{steps}` - Advance the board a specified number of steps.
+`PUT /api/boards/{id}/advance/{steps}` - Advance the board by a specified number of steps.
 
 `PUT /api/boards/{id}/final` - Advance the board until it reaches a stable state (or until a maximum number of attempts is reached).
 
 ## Testing
-The solution includes separate test projects for unit and integration tests, available at the `GameOfLifeTests` test project..
+The solution includes separate test projects for unit and integration tests, available at the `GameOfLifeTests` test project.
 
 ### Run Tests:
 
