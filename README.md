@@ -1,6 +1,6 @@
 ﻿# Conway's Game of Life API
 
-A production-ready API for Conway's Game of Life implemented in C# using .NET 7. The API provides endpoints for creating a board, simulating generations, and retrieving board states. MongoDB is used as the persistence layer, and Docker Compose is provided to easily run MongoDB.
+A production-ready API for (Conway's Game of Life)[https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life] implemented in C# using .NET 7.
 
 ## Technologies Used
 
