@@ -1,6 +1,6 @@
 ﻿# Conway's Game of Life API
 
-A production-ready API for (Conway's Game of Life)[https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life] implemented in C# using .NET 7.
+A production-ready API for [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) implemented in C# using .NET 7.
 
 ## Technologies Used
 
