@@ -4,7 +4,7 @@ using GameOfLifeApi.Repositories;
 using GameOfLifeApi.Services;
 using Moq;
 
-namespace GameOfLifeTests
+namespace GameOfLifeTests.Unit
 {
     public class GameServiceTests
     {
@@ -108,6 +108,13 @@ namespace GameOfLifeTests
                 new bool[] { true, true, true }
             };
 
+            bool[][] stateToCheck = new bool[][]
+            {
+                new bool[] { false, false, false},
+                new bool[] { false, true, true},
+                new bool[] { false, true, true }
+            };  
+
             var board = new Board
             {
                 Id = Guid.NewGuid(),
@@ -123,10 +130,10 @@ namespace GameOfLifeTests
 
             var stateAfterSteps = await _service.AdvanceBoardByStepsAsync(board.Id, 5);
 
-            Assert.Equal(boardState.Length, stateAfterSteps.Value.Length);
+            Assert.Equal(stateToCheck.Length, stateAfterSteps.Value.Length);
             for (int i = 0; i < boardState.Length; i++)
             {
-                Assert.Equal(boardState[i], stateAfterSteps.Value[i]);
+                Assert.Equal(stateToCheck[i], stateAfterSteps.Value[i]);
             }
         }
 
@@ -136,7 +143,7 @@ namespace GameOfLifeTests
             //Glider pattern
             bool[][] initialBoardState = new bool[][]
             {
-new bool[] { false, true, false},
+                new bool[] { false, true, false},
                 new bool[] { false, false, true},
                 new bool[] { true, true, true }
             };
