@@ -42,7 +42,7 @@ namespace GameOfLifeTests.Unit
         }
 
         [Fact]
-        public async Task GetNextStateAsync_ValidBoard_ReturnsNextState()
+        public async Task GetNextStateAsync_GliderBoard_ReturnsNextState()
         {
             //Glider pattern
             bool[][] initialBoardState = new bool[][]
@@ -103,7 +103,7 @@ namespace GameOfLifeTests.Unit
         }
 
         [Fact]
-        public async Task GetStateAfterStepsAsync_ValidBoard_ReturnsStateAfterSteps()
+        public async Task GetStateAfterStepsAsync_GliderBoard_ReturnsStateAfterSteps()
         {
             bool[][] boardState = new bool[][]
             {
@@ -142,7 +142,7 @@ namespace GameOfLifeTests.Unit
         }
 
         [Fact]
-        public async Task GetFinalStateAsync_StableBoard_ReturnsFinalState()
+        public async Task GetFinalStateAsync_GliderBoard_ReturnsFinalState()
         {
             //Glider pattern
             bool[][] initialBoardState = new bool[][]
